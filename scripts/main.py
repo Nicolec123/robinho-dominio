@@ -8,27 +8,40 @@ from scripts.update_csv import update_csv
 
 def main():
     try:
+        print("Iniciando o script...")
+
         # Carregar lista de domínios
-        # Especificar que o arquivo pode não ter cabeçalhos
+        print("Carregando lista de domínios do arquivo 'data/dominios.csv'...")
         dominios_df = pd.read_csv(
             'data/dominios.csv', header=None, names=["dominio", "data_expiracao"], dtype=str)
 
         # Verificar se as colunas esperadas estão no DataFrame
         if "dominio" not in dominios_df.columns or "data_expiracao" not in dominios_df.columns:
             raise ValueError(
-                "O arquivo 'dominios.csv' não contém as colunas esperadas: 'dominio' e 'data_expiracao'.")
+                "O arquivo 'dominios.csv' não contém as colunas esperadas: 'dominio' e 'data_expiracao'."
+            )
+
+        print(f"Total de domínios carregados: {len(dominios_df)}")
 
         # Iterar sobre cada linha do DataFrame
         for index, row in dominios_df.iterrows():
             dominio = row['dominio']
             data_expiracao = row['data_expiracao']
 
+            print(f"\nProcessando domínio: {dominio}")
+            print(f"Data de expiração registrada: {data_expiracao}")
+
             # Verificar se o domínio está perto de expirar
             if check_whois(dominio, data_expiracao):
+                print(f"Domínio {dominio} está próximo de expirar. Enviando e-mail de alerta...")
                 send_email(dominio, data_expiracao)
+            else:
+                print(f"Domínio {dominio} não está próximo de expirar.")
 
-        # Atualizar a lista de domínios (caso haja novos domínios)
+        # Atualizar a lista de domínios
+        print("\nAtualizando a lista de domínios...")
         update_csv()
+
     except FileNotFoundError:
         print("Erro: O arquivo 'data/dominios.csv' não foi encontrado. Certifique-se de que o caminho está correto.")
     except ValueError as e:
@@ -39,3 +52,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
