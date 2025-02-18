@@ -1,9 +1,16 @@
 import pandas as pd
 from datetime import datetime
+import os
+import sys
 
-from scripts.whois_checker import check_whois
-from scripts.email_sender import send_email
-from scripts.update_csv import update_csv
+# Adiciona o diretório 'scripts' ao sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'scripts')))
+
+# Agora os módulos dentro de 'scripts' podem ser importados
+from whois_checker import check_whois
+from email_sender import send_email
+from update_csv import update_csv
+
 
 
 def main():
