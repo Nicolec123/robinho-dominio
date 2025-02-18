@@ -3,11 +3,21 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from os import getenv
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()  # Carregar variáveis de ambiente do arquivo .env
 
 def send_email(dominio, data_expiracao):
     try:
+        # Verificar e converter data_expiracao, caso não seja do tipo datetime
+        if isinstance(data_expiracao, str):
+            try:
+                data_expiracao = datetime.fromisoformat(data_expiracao.replace("Z", ""))
+            except ValueError:
+                raise ValueError(f"Data de expiração inválida para o domínio {dominio}: {data_expiracao}")
+        elif not isinstance(data_expiracao, datetime):
+            raise TypeError(f"Tipo inválido para data de expiração: {type(data_expiracao)}")
+
         # Informações do e-mail
         sender_email = getenv("EMAIL_USER")
         sender_password = getenv("EMAIL_PASS")
@@ -34,3 +44,4 @@ def send_email(dominio, data_expiracao):
 
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
+
